@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  CUSTOMER
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(CUSTOMER)
+  salonId   String?
+  salon     Salon?   @relation(fields: [salonId], references: [id])
+  bookings  Booking[]
+  consultations Consultation[]
+  createdAt DateTime @default(now())
+}
+
+model Salon {
+  id          String    @id @default(cuid())
+  name        String
+  address     String
+  phone       String
+  description String
+  image       String?
+  openTime    String
+  closeTime   String
+  createdAt   DateTime  @default(now())
+
+  admins      User[]
+  stylists    Stylist[]
+  services    Service[]
+  bookings    Booking[]
+}
+
+model Stylist {
+  id             String   @id @default(cuid())
+  name           String
+  photo          String?
+  specialization String
+  experience     Int
+  isActive       Boolean  @default(true)
+
+  salonId        String
+  salon          Salon    @relation(fields: [salonId], references: [id])
+
+  bookings       Booking[]
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Int
+  duration    Int
+  category    String
+  isActive    Boolean  @default(true)
+
+  salonId     String
+  salon       Salon    @relation(fields: [salonId], references: [id])
+
+  bookingServices BookingService[]
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  customerId    String
+  salonId       String
+  stylistId     String
+  date          DateTime
+  startTime     String
+  endTime       String
+  totalPrice    Int
+  totalDuration Int
+  status        BookingStatus @default(PENDING)
+  consultationId String?
+  createdAt     DateTime      @default(now())
+
+  customer      User          @relation(fields: [customerId], references: [id])
+  salon         Salon         @relation(fields: [salonId], references: [id])
+  stylist       Stylist       @relation(fields: [stylistId], references: [id])
+  services      BookingService[]
+  consultation  Consultation? @relation(fields: [consultationId], references: [id])
+}
+
+model BookingService {
+  id        String  @id @default(cuid())
+  bookingId String
+  serviceId String
+
+  booking   Booking @relation(fields: [bookingId], references: [id])
+  service   Service @relation(fields: [serviceId], references: [id])
+}
+
+model Consultation {
+  id                 String   @id @default(cuid())
+  customerId         String
+  hairType           String
+  hairCondition      String
+  complaints         String
+  previousTreatments String
+  desiredResult      String
+  recommendations    Json
+  createdAt          DateTime @default(now())
+
+  customer           User     @relation(fields: [customerId], references: [id])
+  bookings           Booking[]
+}
