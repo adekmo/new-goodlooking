@@ -27,7 +27,7 @@ model User {
   password  String
   role      Role     @default(CUSTOMER)
   salonId   String?
-  salon     Salon?   @relation(fields: [salonId], references: [id])
+  salon     Salon?   @relation(fields: [salonId], references: [id], onDelete: SetNull)
   bookings  Booking[]
   consultations Consultation[]
   createdAt DateTime @default(now())

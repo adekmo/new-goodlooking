@@ -1,0 +1,42 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { Role } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+
+export async function POST(req: NextRequest) {
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  if (!token || token.role !== Role.SUPERADMIN) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const formData = await req.formData();
+  const userId = formData.get("userId") as string;
+
+  if (!userId) {
+    return NextResponse.json({ error: "Missing userId" }, { status: 400 });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId }
+    });
+
+    if (!user || user.role !== Role.ADMIN) {
+    return NextResponse.json({ error: "Invalid user" }, { status: 400 });
+    }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      role: Role.CUSTOMER,
+      salonId: null,
+    },
+  });
+
+  return NextResponse.redirect(
+    new URL("/dashboard/superadmin/users", req.url)
+  );
+}

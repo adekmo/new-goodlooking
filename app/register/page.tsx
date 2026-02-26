@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
 
+  const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -17,19 +17,23 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password }),
     });
 
-    if (res?.error) {
-      setError("Invalid email or password");
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error);
       setLoading(false);
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/login");
   };
 
   return (
@@ -38,9 +42,17 @@ export default function LoginPage() {
         onSubmit={handleSubmit}
         style={{ display: "flex", flexDirection: "column", gap: "12px", width: "300px" }}
       >
-        <h1>Login</h1>
+        <h1>Register</h1>
 
         {error && <p style={{ color: "red" }}>{error}</p>}
+
+        <input
+          type="text"
+          placeholder="Name"
+          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
         <input
           type="email"
@@ -59,11 +71,8 @@ export default function LoginPage() {
         />
 
         <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Registering..." : "Register"}
         </button>
-        <p>
-          Dont have an account? <a href="/register">Register</a>
-        </p>
       </form>
     </div>
   );
