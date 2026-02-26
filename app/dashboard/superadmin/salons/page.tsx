@@ -5,6 +5,7 @@ import { Role } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { SalonType } from "@/types/salon";
 import CreateSalonForm from "./_components/CreateSalonForm";
+import DeleteSalonButton from "./_components/DeleteSalonButton";
 
 
 const SuperadminSalonsPage = async () => {
@@ -40,6 +41,7 @@ const SuperadminSalonsPage = async () => {
             <p>
               {salon.openTime} - {salon.closeTime}
             </p>
+            <DeleteSalonButton salonId={salon.id} />
           </div>
         ))}
       </div>
