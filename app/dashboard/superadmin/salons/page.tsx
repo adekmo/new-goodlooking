@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { SalonType } from "@/types/salon";
 import CreateSalonForm from "./_components/CreateSalonForm";
 import DeleteSalonButton from "./_components/DeleteSalonButton";
+import EditSalonForm from "./_components/EditSalonForm";
 
 
 const SuperadminSalonsPage = async () => {
@@ -41,6 +42,7 @@ const SuperadminSalonsPage = async () => {
             <p>
               {salon.openTime} - {salon.closeTime}
             </p>
+            <EditSalonForm salon={salon} />
             <DeleteSalonButton salonId={salon.id} />
           </div>
         ))}
