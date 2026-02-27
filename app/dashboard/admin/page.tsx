@@ -8,18 +8,18 @@ const AdminPage = async () => {
 
     const session = await getServerSession(authOptions)
 
-    // 🔐 Proteksi Role
+    // Proteksi Role
     if (!session || session.user.role !== Role.ADMIN) {
         redirect("/")
     }
 
-    // 🔎 Ambil data admin + salon miliknya
+    // Ambil data admin + salon miliknya
     const admin = await prisma.user.findUnique({
         where: { id: session.user.id },
         include: { salon: true }
     })
 
-    // ❗ Jika admin belum punya salon
+    // Jika admin belum punya salon
     if (!admin?.salon) {
         return (
         <div className="p-6">
