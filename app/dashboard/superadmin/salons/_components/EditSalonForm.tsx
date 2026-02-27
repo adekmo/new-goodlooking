@@ -69,7 +69,7 @@ const EditSalonForm = ({ salon }: Props) => {
         <Button variant="secondary">Edit</Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <DialogTitle>Edit Salon</DialogTitle>
         </DialogHeader>
