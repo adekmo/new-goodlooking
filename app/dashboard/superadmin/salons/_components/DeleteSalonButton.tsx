@@ -22,7 +22,7 @@ const DeleteSalonButton = ({ salonId}: Props ) => {
     };
   return (
     <button
-      onClick={handleDelete}
+      onClick={handleDelete}    
       className="mt-2 bg-red-500 text-white px-3 py-1 rounded"
     >
       Delete
