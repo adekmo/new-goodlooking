@@ -54,6 +54,62 @@ export async function POST(req: NextRequest) {
 
   const endTime = endDate.toTimeString().slice(0, 5);
 
+  function toMinutes(time: string) {
+    const [h, m] = time.split(":").map(Number);
+    return h * 60 + m;
+  }
+
+  const salon = await prisma.salon.findUnique({
+    where: { id: salonId },
+  });
+
+  if (!salon) {
+    return NextResponse.json({ error: "Salon not found" }, { status: 404 });
+  }
+
+  const openMinutes = toMinutes(salon.openTime);
+  const closeMinutes = toMinutes(salon.closeTime);
+  const startMinutes = toMinutes(startTime);
+  const endMinutes = toMinutes(endTime);
+
+  if (startMinutes < openMinutes || endMinutes > closeMinutes) {
+    return NextResponse.json(
+      { error: "Booking outside salon working hours" },
+      { status: 400 }
+    );
+  }
+
+  // Cek bentrok stylist
+  const existingBooking = await prisma.booking.findFirst({
+    where: {
+      stylistId,
+      date: {
+        gte: new Date(date + "T00:00:00"),
+        lt: new Date(date + "T23:59:59"),
+      },
+      OR: [
+        {
+          startTime: {
+            lt: endTime,
+          },
+          endTime: {
+            gt: startTime,
+          },
+        },
+      ],
+      status: {
+        not: "CANCELLED",
+      },
+    },
+  });
+
+  if (existingBooking) {
+    return NextResponse.json(
+      { error: "Stylist already booked at that time" },
+      { status: 400 }
+    );
+  }
+
   const booking = await prisma.booking.create({
     data: {
       customerId: token.sub!,

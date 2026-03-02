@@ -59,6 +59,17 @@ const AdminBookingPage = async () => {
               <li key={bs.id}>{bs.service.name}</li>
             ))}
           </ul>
+          {booking.status === "PENDING" && (
+            <div>
+                <form action={`/api/booking/${booking.id}/confirm`} method="POST">
+                <button type="submit">Confirm</button>
+                </form>
+
+                <form action={`/api/booking/${booking.id}/cancel`} method="POST">
+                <button type="submit">Cancel</button>
+                </form>
+            </div>
+            )}
         </div>
       ))}
     </div>
