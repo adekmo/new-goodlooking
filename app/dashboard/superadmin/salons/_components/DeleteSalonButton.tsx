@@ -1,33 +1,85 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Props {
-    salonId: string;
+  salonId: string;
 }
 
-const DeleteSalonButton = ({ salonId}: Props ) => {
+const DeleteSalonButton = ({ salonId }: Props) => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-    const router = useRouter();
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
 
-    const handleDelete = async () => {
-        const confirmDelete = confirm("Are you sure?");
-        if (!confirmDelete) return;
+      const res = await fetch(
+        `/api/superadmin/salons/${salonId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
-        await fetch(`/api/superadmin/salons/${salonId}`, {
-        method: "DELETE",
-        });
+      if (!res.ok) throw new Error();
 
-        router.refresh(); // refresh server component
-    };
+      toast.success("Salon deleted successfully 🗑️");
+      router.refresh();
+    } catch {
+      toast.error("Failed to delete salon");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <button
-      onClick={handleDelete}    
-      className="mt-2 bg-red-500 text-white px-3 py-1 rounded"
-    >
-      Delete
-    </button>
-  )
-}
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button className="text-red-500 hover:text-red-700 text-sm font-medium">
+          Delete
+        </button>
+      </AlertDialogTrigger>
 
-export default DeleteSalonButton
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            Delete Salon
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to delete this salon? 
+            This action cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleDelete}
+            disabled={loading}
+            className="bg-red-500 hover:bg-red-600"
+          >
+            {loading ? "Deleting..." : "Delete"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
+export default DeleteSalonButton;
