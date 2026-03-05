@@ -7,12 +7,14 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Role, BookingStatus } from "@prisma/client";
 import Link from "next/link";
+import BookingCalendar from "@/components/BookingCalendar";
 
 interface Props {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-const AdminBookingPage = async ({ searchParams }: Props) => {
+const AdminBookingPage = async ({searchParams,}: {searchParams: Promise<{ status?: string }>;}) => {
+  const params = await searchParams;
   const session = await getServerSession(authOptions);
 
   if (!session || session.user.role !== Role.ADMIN) {
@@ -26,10 +28,7 @@ const AdminBookingPage = async ({ searchParams }: Props) => {
     "CANCELLED",
   ];
 
-  const statusParam =
-    typeof searchParams?.status === "string"
-      ? searchParams.status
-      : undefined;
+  const statusParam = params?.status;
 
   const statusFilter = validStatuses.includes(
     statusParam as BookingStatus
@@ -70,6 +69,31 @@ const AdminBookingPage = async ({ searchParams }: Props) => {
         return "bg-gray-100 text-gray-700";
     }
   };
+
+  const events = bookings.map((booking) => {
+    const start = new Date(booking.date);
+    const [sh, sm] = booking.startTime.split(":").map(Number);
+    start.setHours(sh, sm);
+
+    const end = new Date(booking.date);
+    const [eh, em] = booking.endTime.split(":").map(Number);
+    end.setHours(eh, em);
+
+    return {
+      title: `${booking.customer.name}`,
+      start,
+      end,
+      status: booking.status,
+      stylist: booking.stylist.name,
+      customer: booking.customer.name,
+      services: booking.services.map((s) => s.service.name),
+      total: booking.totalPrice,
+    };
+  });
+
+  const stylists = [
+    ...new Set(bookings.map((b) => b.stylist.name)),
+  ];
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -101,6 +125,7 @@ const AdminBookingPage = async ({ searchParams }: Props) => {
       )}
 
       <div className="grid gap-4">
+        <BookingCalendar events={events} stylists={stylists} />
         {bookings.map((booking) => (
           <div
             key={booking.id}
