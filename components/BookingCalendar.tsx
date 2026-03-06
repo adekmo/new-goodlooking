@@ -100,7 +100,7 @@ const BookingCalendar = ({ events, stylists }: Props) => {
       {/* MODAL DETAIL BOOKING */}
       {selectedEvent && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl w-[400px] space-y-4 shadow-lg">
+          <div className="bg-white p-6 rounded-xl w-100 space-y-4 shadow-lg">
 
             <h2 className="text-lg font-bold">
               Booking Detail
