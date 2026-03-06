@@ -1,8 +1,11 @@
+import EditStylistForm from "@/components/EditStylistForm";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+
+
 
 
 const EditStylistPage = async ({ params,}: { params: Promise<{ id: string }>; }) => {
@@ -22,41 +25,8 @@ const EditStylistPage = async ({ params,}: { params: Promise<{ id: string }>; })
     redirect("/dashboard/admin/stylist");
   }
   return (
-    <div>
-      <h1>Edit Stylist</h1>
-
-      <form
-        action={`/api/admin/stylist/${stylist.id}`}
-        method="POST"
-      >
-        <input type="hidden" name="_method" value="PATCH" />
-
-        <div>
-          <label>Name</label>
-          <input name="name" defaultValue={stylist.name} required />
-        </div>
-
-        <div>
-          <label>Specialization</label>
-          <input
-            name="specialization"
-            defaultValue={stylist.specialization}
-            required
-          />
-        </div>
-
-        <div>
-          <label>Experience</label>
-          <input
-            name="experience"
-            type="number"
-            defaultValue={stylist.experience}
-            required
-          />
-        </div>
-
-        <button type="submit">Update</button>
-      </form>
+    <div className="p-6 max-w-xl">
+      <EditStylistForm stylist={stylist} />
     </div>
   )
 }

@@ -45,9 +45,9 @@ const { id } = await params;
     },
   });
 
-  return NextResponse.redirect(
-    new URL("/dashboard/admin/stylist", req.url)
-  );
+  return NextResponse.json({
+    success: true,
+  });
 }
 
 export async function DELETE(

@@ -13,15 +13,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  if (!token.salonId) {
+    return NextResponse.json({ error: "No salon assigned" }, { status: 400 });
+  }
+
   const formData = await req.formData();
 
   const name = formData.get("name") as string;
   const specialization = formData.get("specialization") as string;
   const experience = Number(formData.get("experience"));
-
-  if (!token.salonId) {
-    return NextResponse.json({ error: "No salon assigned" }, { status: 400 });
-  }
 
   await prisma.stylist.create({
     data: {
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return NextResponse.redirect(
-    new URL("/dashboard/admin/stylist", req.url)
-  );
+  return NextResponse.json({
+    success: true,
+  });
 }
