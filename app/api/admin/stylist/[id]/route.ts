@@ -8,7 +8,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
 
-const { id } = await params;
+  const { id } = await params;
   const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,

@@ -11,9 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
+import StylistToolbar from "@/components/StylistToolbar";
 
 
-const StylistPage = async () => {
+const StylistPage = async ({searchParams,}: {searchParams: {search?: string;specialization?: string;};}) => {
 
     const session = await getServerSession(authOptions)
 
@@ -30,7 +31,21 @@ const StylistPage = async () => {
     }
 
     const stylists = await prisma.stylist.findMany({
-        where: { salonId: admin.salonId },
+      where: {
+        salonId: admin.salonId,
+
+        name: searchParams.search
+          ? {
+              contains: searchParams.search,
+              mode: "insensitive",
+            }
+          : undefined,
+
+        specialization: searchParams.specialization
+          ? searchParams.specialization
+          : undefined,
+      },
+      orderBy: { name: "asc" },
     });
   return (
     <div className="p-6 space-y-6">
@@ -43,6 +58,8 @@ const StylistPage = async () => {
         </Link>
       </div>
 
+      <StylistToolbar />
+
       {stylists.length === 0 && (
         <div className="text-center py-10 text-gray-500 border rounded-xl">
           Belum ada stylist. Tambahkan stylist pertama.
@@ -50,13 +67,9 @@ const StylistPage = async () => {
       )}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
         {stylists.map((stylist) => (
-
           <Card key={stylist.id} className="hover:shadow-lg transition">
-
             <CardHeader className="flex flex-row items-center gap-4">
-
               <Avatar className="h-12 w-12">
                 <AvatarFallback>
                   {stylist.name.charAt(0)}
@@ -71,11 +84,9 @@ const StylistPage = async () => {
                   {stylist.specialization}
                 </p>
               </div>
-
             </CardHeader>
 
             <CardContent className="space-y-4">
-
               <div className="flex items-center justify-between">
                 <Badge variant="secondary">
                   {stylist.experience} years experience
@@ -93,6 +104,21 @@ const StylistPage = async () => {
               </div>
 
               <div className="flex gap-2 pt-2">
+
+                {/* CALENDAR */}
+
+                <Link
+                  href={`/dashboard/admin/stylist/${stylist.id}/calendar`}
+                >
+                  <Button size="sm" variant="secondary">
+                    Calendar
+                  </Button>
+                </Link>
+                <Link href={`/dashboard/admin/stylist/${stylist.id}/availability`}>
+                  <Button size="sm" variant="secondary">
+                    Availability
+                  </Button>
+                </Link>
                 <Link
                   href={`/dashboard/admin/stylist/${stylist.id}/edit`}
                 >

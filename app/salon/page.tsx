@@ -1,5 +1,16 @@
-import { prisma } from "@/lib/prisma";
-import Link from "next/link";
+import { prisma } from "@/lib/prisma"
+import Link from "next/link"
+
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter
+} from "@/components/ui/card"
+
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 const SalonPage = async () => {
 
@@ -9,24 +20,58 @@ const SalonPage = async () => {
         },
     });
   return (
-    <div>
-      <h1>Our Salons</h1>
+    <div className="max-w-6xl mx-auto py-10 px-4">
 
-      {salons.length === 0 && <p>No salons available.</p>}
+      <h1 className="text-3xl font-bold mb-8">
+        Our Salons
+      </h1>
 
-      <ul>
+      {salons.length === 0 && (
+        <p>No salons available.</p>
+      )}
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
         {salons.map((salon) => (
-          <li key={salon.id}>
-            <h2>{salon.name}</h2>
-            <p>{salon.address}</p>
-            <p>Phone: {salon.phone}</p>
 
-            <Link href={`/salon/${salon.id}`}>
-              View Details
-            </Link>
-          </li>
+          <Card key={salon.id}>
+
+            <CardHeader>
+              <CardTitle>
+                {salon.name}
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent className="space-y-2">
+
+              <p className="text-sm text-muted-foreground">
+                {salon.address}
+              </p>
+
+              <Badge variant="outline">
+                {salon.phone}
+              </Badge>
+
+            </CardContent>
+
+            <CardFooter>
+
+              <Link
+                href={`/salon/${salon.id}`}
+                className="w-full"
+              >
+                <Button className="w-full">
+                  View Details
+                </Button>
+              </Link>
+
+            </CardFooter>
+
+          </Card>
+
         ))}
-      </ul>
+
+      </div>
     </div>
   )
 }

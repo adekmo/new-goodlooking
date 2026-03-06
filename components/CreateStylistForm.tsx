@@ -74,10 +74,18 @@ const CreateStylistForm = () => {
             <Input name="experience" type="number" required />
           </div>
 
-          <Button disabled={loading}>
-            {loading ? "Creating..." : "Create Stylist"}
-          </Button>
+          <div className="w-full flex justify-end gap-3 pt-4">
+                <Button
+                    variant="outline"
+                    onClick={() => router.push("/dashboard/admin/stylist") }
+                >
+                    Cancel
+                </Button>
 
+                <Button disabled={loading}>
+                  {loading ? "Creating..." : "Create Stylist"}
+                </Button>
+            </div>
         </form>
 
       </CardContent>
