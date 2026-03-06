@@ -1,3 +1,4 @@
+import EditServiceForm from "@/components/EditServiceForm ";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
@@ -23,41 +24,8 @@ const EditServicePage = async ({ params }: { params: Promise<{ id: string }> }) 
     }
 
   return (
-    <div>
-      <h1>Edit Service</h1>
-
-      <form action={`/api/admin/service/${service.id}`} method="POST">
-        <div>
-          <label>Name</label>
-          <input name="name" defaultValue={service.name} required />
-        </div>
-
-        <div>
-          <label>Description</label>
-          <textarea name="description" defaultValue={service.description} />
-        </div>
-
-        <div>
-          <label>Price</label>
-          <input name="price" type="number" defaultValue={service.price} />
-        </div>
-
-        <div>
-          <label>Duration</label>
-          <input
-            name="duration"
-            type="number"
-            defaultValue={service.duration}
-          />
-        </div>
-
-        <div>
-          <label>Category</label>
-          <input name="category" defaultValue={service.category} />
-        </div>
-
-        <button type="submit">Update</button>
-      </form>
+    <div className="max-w-xl mx-auto">
+      <EditServiceForm service={service} />
     </div>
   )
 }

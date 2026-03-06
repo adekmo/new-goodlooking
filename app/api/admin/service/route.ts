@@ -37,6 +37,6 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.redirect(
-    new URL("/dashboard/admin/service", req.url)
+    new URL("/dashboard/admin/service?created=1", req.url)
   );
 }
